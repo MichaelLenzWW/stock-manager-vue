@@ -53,4 +53,20 @@ export default class StockService {
       throw new Exception(message, error);
     }
   }
+
+  /**
+   *
+   * @param {*} stockId
+   */
+  async fetchOrdersByStockId(stockId) {
+    try {
+      console.log(`Fetching orders for stock id [${stockId}].`);
+      const orders = await fetch(`http://localhost:8081/orders?search=stockId:${stockId}`);
+      return await orders.json();
+    } catch (error) {
+      const message = `Error on loading orders for stock id [${stockId}].`;
+      console.error(message, error);
+      throw new Exception(message, error);
+    }
+  }
 }
