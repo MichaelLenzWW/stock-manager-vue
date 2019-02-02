@@ -1,0 +1,56 @@
+import Stock from "@/models/Stock.js";
+import Exception from "@/models/ExceptionClass.js";
+
+export default class StockService {
+  /**
+   * Adds a ticker symbol to the database.
+   *
+   * @param {String} symbol the ticker symbol
+   *
+   * @param {String} name the ticker name
+   *
+   * @returns {void}
+   */
+  async addTickerSymbol(symbol, name) {
+    console.log("Adding Ticker Symbol [symbol] - [name].");
+
+    const url = "http://localhost:8081/stock";
+    const stock = new Stock(null, "1", symbol, name);
+
+    try {
+      const result = await fetch(url, {
+        method: "POST",
+        body: JSON.stringify(stock),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      if (result.status !== 200) {
+        throw new Exception("");
+      }
+      return result;
+    } catch (error) {
+      const message = "Error on adding the ticker symbol to the database.";
+      console.error(message, error);
+      throw new Exception(message, error);
+    }
+  }
+
+  /**
+   * Get the ticker symbols from the server via asynchronous REST call.
+   *
+   * @returns {Stock[]}
+   */
+  async fetchTickerSymbols() {
+    console.log("Fetching ticker symbols.");
+
+    try {
+      const result = await fetch("http://localhost:8081/stock");
+      return await result.json();
+    } catch (error) {
+      const message = "Error on loading the ticker symbols from the database.";
+      console.error(message, error);
+      throw new Exception(message, error);
+    }
+  }
+}

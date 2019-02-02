@@ -1,23 +1,32 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
-    <router-view/>
+    <el-menu
+      :default-active="menu.defaultActive"
+      mode="horizontal"
+      @select="handleSelect"
+      background-color="#545c64"
+      text-color="#fff"
+      active-text-color="#ffd04b"
+      :router="menu.router"
+    >
+      <el-menu-item index="1" route="Welcome">Welcome</el-menu-item>
+      <el-menu-item index="2" route="Ticker">Ticker</el-menu-item>
+      <el-menu-item index="3">Stocks</el-menu-item>
+    </el-menu>
+    <div class="content">
+      <router-view/>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'App'
-}
+  name: "App",
+  data() {
+    return { menu: { router: true, defaultActive: "1" } };
+  },
+  methods: {
+    handleSelect() {}
+  }
+};
 </script>
-
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
