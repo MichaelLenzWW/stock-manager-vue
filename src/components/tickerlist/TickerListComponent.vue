@@ -31,7 +31,12 @@
     </el-card>
 
     <div v-loading="isLoading">
-      <ticker-component v-for="stock in sortedStockList" :key="stock.symbol" :stock="stock"></ticker-component>
+      <ticker-component
+        v-for="stock in sortedStockList"
+        :key="stock.symbol"
+        :stock="stock"
+        v-on:delete="onDelete"
+      ></ticker-component>
     </div>
   </div>
 </template>

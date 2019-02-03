@@ -27,6 +27,12 @@ export default {
       try {
         await this.stockService.delteTickerSymbol(this.stock.id);
         this.$emit("delete");
+        this.$notify.error({
+          duration: 0,
+          type: "info",
+          title: "Info",
+          message: "Ticker successfully deleted."
+        });
       } catch (error) {
         this.$notify.error({
           duration: 0,

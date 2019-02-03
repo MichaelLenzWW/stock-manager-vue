@@ -46,6 +46,9 @@ export default {
     }
   },
   methods: {
+    onDelete() {
+      this.fetchTickerSymbols();
+    },
     onButtonAddClicked() {
       this.$refs.form.validate((isValid, invalidFields) => {
         if (isValid) {

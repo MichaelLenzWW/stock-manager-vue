@@ -44,7 +44,7 @@ export default class StockService {
   async delteTickerSymbol(id) {
     console.log(`Deleting Ticker Symbol with id [${id}].`);
 
-    const url = "http://localhost:8081/stock";
+    const url = `http://localhost:8081/stock/${id}`;
 
     try {
       const result = await fetch(url, {
