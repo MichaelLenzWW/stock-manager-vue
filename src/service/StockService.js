@@ -12,7 +12,7 @@ export default class StockService {
    * @returns {void}
    */
   async addTickerSymbol(symbol, name) {
-    console.log("Adding Ticker Symbol [symbol] - [name].");
+    console.log(`Adding Ticker Symbol [${symbol}] - [${name}].`);
 
     const url = "http://localhost:8081/stock";
     const stock = new Stock(null, "1", symbol, name);
@@ -30,7 +30,35 @@ export default class StockService {
       }
       return result;
     } catch (error) {
-      const message = "Error on adding the ticker symbol to the database.";
+      const message = `Error on adding the ticker symbol [${symbol}] to the database.`;
+      console.error(message, error);
+      throw new Exception(message, error);
+    }
+  }
+
+  /**
+   * Delte the given ticker symbol from the database.
+   *
+   * @param {Number} id the ticker symbol to be deleted
+   */
+  async delteTickerSymbol(id) {
+    console.log(`Deleting Ticker Symbol with id [${id}].`);
+
+    const url = "http://localhost:8081/stock";
+
+    try {
+      const result = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+      if (result.status !== 200) {
+        throw new Exception("");
+      }
+      return result;
+    } catch (error) {
+      const message = `Error on deleting the ticker [${id}] from the database.`;
       console.error(message, error);
       throw new Exception(message, error);
     }
