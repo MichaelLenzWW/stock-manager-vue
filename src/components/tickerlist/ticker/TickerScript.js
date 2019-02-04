@@ -1,24 +1,48 @@
 import StockService from "@/service/StockService.js";
+import OrderDialog from "@/components/tickerlist/order/OrderDialogComponent.vue";
+import Order from "@/models/Order";
+import { mapActions } from "vuex";
+
 export default {
   props: ["stock"],
   data() {
     return {
+      showOrderDialog: false,
       isLoading: false,
       stockService: new StockService(),
       orderList: []
     };
   },
 
+  components: {
+    OrderDialog
+  },
+
   mounted() {
     this.fetchOrders();
   },
+
   methods: {
+    ...mapActions(["updateOrder"]),
     /**
      *
      * @param {*} index
      * @param {*} row
      */
     onCloseClicked(index, row) {},
+
+    onBuyClicked() {
+      // Create a new order and update the store
+      const order = new Order();
+      order.purchaseDate = new Date();
+      order.quantity = 20000;
+
+      this.updateOrder(order);
+
+      this.showOrderDialog = true;
+    },
+
+    onSellClicked() {},
 
     /**
      *
@@ -27,10 +51,9 @@ export default {
       try {
         await this.stockService.delteTickerSymbol(this.stock.id);
         this.$emit("delete");
-        this.$notify.error({
-          duration: 0,
-          type: "info",
-          title: "Info",
+        this.$notify({
+          type: "success",
+          title: "Success",
           message: "Ticker successfully deleted."
         });
       } catch (error) {
@@ -70,7 +93,9 @@ export default {
       this.isLoading = true;
       this.orderList = [];
       try {
-        this.orderList = await this.stockService.fetchOrdersByStockId(this.stock.id);
+        this.orderList = await this.stockService.fetchOrdersByStockId(
+          this.stock.id
+        );
         this.calculateOrderInformation();
       } catch (error) {
         this.$notify.error({
@@ -100,13 +125,23 @@ export default {
      */
     calculateProfitOrLoss(order) {
       // Expired options are purchase price - purchase provision
-      if (order.type === "STOCK_OPTION" && order.purchaseDate && order.status === "EXPIRED") {
-        return order.purchasePrice * (order.quantity * -1) * 100 - order.purchaseProvision;
+      if (
+        order.type === "STOCK_OPTION" &&
+        order.purchaseDate &&
+        order.status === "EXPIRED"
+      ) {
+        return (
+          order.purchasePrice * (order.quantity * -1) * 100 -
+          order.purchaseProvision
+        );
       }
 
       // Sold orders are delta of sell/purchase price *quantity - provisions
       if (order.sellDate) {
-        return (order.sellPrice - order.purchasePrice) * order.quantity - (order.sellProvision + order.purchaseProvision);
+        return (
+          (order.sellPrice - order.purchasePrice) * order.quantity -
+          (order.sellProvision + order.purchaseProvision)
+        );
       }
       return 0;
     }

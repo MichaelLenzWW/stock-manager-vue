@@ -5,15 +5,24 @@
       <div slot="header" class="clearfix">
         <span :class="$style.stockTitle">{{stock.symbol}} - {{stock.name}}</span>
         <div style="float: right;">
-          <el-button icon="el-icon-goods" size="small" type="primary">Buy</el-button>
+          <el-button icon="el-icon-plus" size="mini" type="primary" @click="onBuyClicked">Buy</el-button>
+          <el-button icon="el-icon-minus" size="mini" type="primary" @click="onSellClicked">Sell</el-button>
           <el-button
             v-if="orderList.length === 0"
             icon="el-icon-delete"
-            size="small"
+            size="mini"
             type="primary"
             @click="onDeleteClicked"
           >Delete</el-button>
         </div>
+        <order-dialog
+          v-show="showOrderDialog"
+          :showOrderDialog.sync="showOrderDialog"
+          :stock.sync="stock"
+          @cancel="showOrderDialog=false"
+          @confirm="true===false"
+          @close="showOrderDialog=false"
+        ></order-dialog>
       </div>
 
       <el-table
