@@ -41,7 +41,7 @@
 
         <el-col :span="6">
           <el-form-item label="Purchase Provision" prop="purchaseProvision" required>
-            <el-input v-model="order.provision" placeholder="Enter purchase provision..."></el-input>
+            <el-input v-model="order.purchaseProvision" placeholder="Enter purchase provision..."></el-input>
           </el-form-item>
         </el-col>
       </el-row>
@@ -60,22 +60,29 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
+import Order from "@/models/Order";
 
 export default {
   props: ["showOrderDialog", "stock"],
   data() {
     return {
       isOption: true,
+      order: new Order(),
       form: {
         symbol: this.stock.symbol,
         name: this.stock.name
       }
     };
   },
-  computed: {
-    ...mapGetters({ order: "orderFromStore" })
+  watch: {
+    showOrderDialog(value) {
+      if (value) {
+        this.order = this.orderFromStore();
+      }
+    }
   },
   methods: {
+    ...mapGetters(["orderFromStore"]),
     /**
      * User clicked the close icon of the dialog.
      */

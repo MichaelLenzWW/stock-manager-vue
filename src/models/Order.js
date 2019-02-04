@@ -1,10 +1,14 @@
 export default class Order {
   constructor() {
     this._id = null;
+    this._createDate = new Date();
     this._version = 0;
     this._tenant = "1";
+    this._purchasePrice = 0;
+    this._purchaseProvision = 0;
     this._quantity = 0;
-    this._createDate = new Date();
+    this._sellPrice = 0;
+    this._sellProvision = 0;
   }
 
   set tenant(tenant) {

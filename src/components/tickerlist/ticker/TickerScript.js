@@ -35,8 +35,6 @@ export default {
       // Create a new order and update the store
       const order = new Order();
       order.purchaseDate = new Date();
-      order.quantity = 20000;
-
       this.updateOrder(order);
 
       this.showOrderDialog = true;
