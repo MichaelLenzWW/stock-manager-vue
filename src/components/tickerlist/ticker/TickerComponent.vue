@@ -20,7 +20,7 @@
           :showOrderDialog.sync="showOrderDialog"
           :stock.sync="stock"
           @cancel="showOrderDialog=false"
-          @confirm="true===false"
+          @confirm="onConfirmOrderClicked"
           @close="showOrderDialog=false"
         ></order-dialog>
       </div>

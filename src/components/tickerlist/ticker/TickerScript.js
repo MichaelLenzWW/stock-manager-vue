@@ -31,6 +31,9 @@ export default {
      */
     onCloseClicked(index, row) {},
 
+    /**
+     * Open the buy dialog.
+     */
     onBuyClicked() {
       // Create a new order and update the store
       const order = new Order();
@@ -38,6 +41,10 @@ export default {
       this.updateOrder(order);
 
       this.showOrderDialog = true;
+    },
+
+    onConfirmOrderClicked(orderData) {
+      console.error(orderData);
     },
 
     onSellClicked() {},
@@ -91,9 +98,7 @@ export default {
       this.isLoading = true;
       this.orderList = [];
       try {
-        this.orderList = await this.stockService.fetchOrdersByStockId(
-          this.stock.id
-        );
+        this.orderList = await this.stockService.fetchOrdersByStockId(this.stock.id);
         this.calculateOrderInformation();
       } catch (error) {
         this.$notify.error({
@@ -123,23 +128,13 @@ export default {
      */
     calculateProfitOrLoss(order) {
       // Expired options are purchase price - purchase provision
-      if (
-        order.type === "STOCK_OPTION" &&
-        order.purchaseDate &&
-        order.status === "EXPIRED"
-      ) {
-        return (
-          order.purchasePrice * (order.quantity * -1) * 100 -
-          order.purchaseProvision
-        );
+      if (order.type === "STOCK_OPTION" && order.purchaseDate && order.status === "EXPIRED") {
+        return order.purchasePrice * (order.quantity * -1) * 100 - order.purchaseProvision;
       }
 
       // Sold orders are delta of sell/purchase price *quantity - provisions
       if (order.sellDate) {
-        return (
-          (order.sellPrice - order.purchasePrice) * order.quantity -
-          (order.sellProvision + order.purchaseProvision)
-        );
+        return (order.sellPrice - order.purchasePrice) * order.quantity - (order.sellProvision + order.purchaseProvision);
       }
       return 0;
     }
