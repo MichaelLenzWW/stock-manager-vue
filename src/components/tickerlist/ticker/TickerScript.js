@@ -2,11 +2,13 @@ import StockService from "@/service/StockService.js";
 import OrderDialog from "@/components/tickerlist/order/OrderDialogComponent.vue";
 import Order from "@/models/Order";
 import { mapActions } from "vuex";
+import { NotificationUtil } from "../../../utils/NotificationUtil";
 
 export default {
   props: ["stock"],
   data() {
     return {
+      notificationUtil: new NotificationUtil(this),
       showOrderDialog: false,
       isLoading: false,
       stockService: new StockService(),
@@ -56,18 +58,11 @@ export default {
       try {
         await this.stockService.delteTickerSymbol(this.stock.id);
         this.$emit("delete");
-        this.$notify({
-          type: "success",
-          title: "Success",
-          message: "Ticker successfully deleted."
-        });
+        this.notificationUtil.sendSuccessMessage(
+          "Ticker successfully deleted."
+        );
       } catch (error) {
-        this.$notify.error({
-          duration: 0,
-          type: "error",
-          title: "Error",
-          message: error.message
-        });
+        this.notificationUtil.sendErrorMessage(error.message);
       }
     },
 
@@ -91,6 +86,7 @@ export default {
         }
       }
     },
+
     /**
      *
      */
@@ -98,19 +94,17 @@ export default {
       this.isLoading = true;
       this.orderList = [];
       try {
-        this.orderList = await this.stockService.fetchOrdersByStockId(this.stock.id);
+        this.orderList = await this.stockService.fetchOrdersByStockId(
+          this.stock.id
+        );
         this.calculateOrderInformation();
       } catch (error) {
-        this.$notify.error({
-          duration: 0,
-          type: "error",
-          title: "Error",
-          message: error.message
-        });
+        this.notificationUtil.sendErrorMessage(error.message);
       } finally {
         this.isLoading = false;
       }
     },
+
     /**
      *
      */
@@ -119,6 +113,7 @@ export default {
         order.profitOrLoss = this.calculateProfitOrLoss(order);
       });
     },
+
     /**
      * Calculates profit or loss from the given order.
      *
@@ -128,13 +123,23 @@ export default {
      */
     calculateProfitOrLoss(order) {
       // Expired options are purchase price - purchase provision
-      if (order.type === "STOCK_OPTION" && order.purchaseDate && order.status === "EXPIRED") {
-        return order.purchasePrice * (order.quantity * -1) * 100 - order.purchaseProvision;
+      if (
+        order.type === "STOCK_OPTION" &&
+        order.purchaseDate &&
+        order.status === "EXPIRED"
+      ) {
+        return (
+          order.purchasePrice * (order.quantity * -1) * 100 -
+          order.purchaseProvision
+        );
       }
 
       // Sold orders are delta of sell/purchase price *quantity - provisions
       if (order.sellDate) {
-        return (order.sellPrice - order.purchasePrice) * order.quantity - (order.sellProvision + order.purchaseProvision);
+        return (
+          (order.sellPrice - order.purchasePrice) * order.quantity -
+          (order.sellProvision + order.purchaseProvision)
+        );
       }
       return 0;
     }

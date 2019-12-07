@@ -1,11 +1,13 @@
 import StockService from "@/service/StockService.js";
 import TickerComponent from "./ticker/TickerComponent.vue";
+import { NotificationUtil } from "../../utils/NotificationUtil";
 
 export default {
   name: "Ticker",
   components: { TickerComponent },
   data() {
     return {
+      notificationUtil: new NotificationUtil(this),
       isLoading: false,
       stockService: new StockService(),
       stockList: [],
@@ -49,6 +51,7 @@ export default {
     onDelete() {
       this.fetchTickerSymbols();
     },
+
     onButtonAddClicked() {
       this.$refs.form.validate((isValid, invalidFields) => {
         if (isValid) {
@@ -56,28 +59,30 @@ export default {
         }
       });
     },
+
     onButtonRefreshClicked() {
       this.fetchTickerSymbols();
     },
+
     /**
      * Add the entered ticker symbol to the database.
      */
     async addTickerSymbol() {
       this.isLoading = true;
       try {
-        await this.stockService.addTickerSymbol(this.form.symbol, this.form.name);
+        await this.stockService.addTickerSymbol(
+          this.form.symbol,
+          this.form.name
+        );
+        this.notificationUtil.sendSuccessMessage("Ticker symbol added.");
         this.fetchTickerSymbols();
       } catch (error) {
-        this.$notify.error({
-          duration: 0,
-          type: "error",
-          title: "Error",
-          message: error.message
-        });
+        this.notificationUtil.sendErrorMessage(error.message);
       } finally {
         this.isLoading = false;
       }
     },
+
     /**
      * Retrieves the list of ticker symbols from the database.
      */
@@ -87,12 +92,7 @@ export default {
       try {
         this.stockList = await this.stockService.fetchTickerSymbols();
       } catch (error) {
-        this.$notify.error({
-          duration: 0,
-          type: "error",
-          title: "Error",
-          message: error.message
-        });
+        this.notificationUtil.sendErrorMessage(error.message);
       } finally {
         this.isLoading = false;
       }
